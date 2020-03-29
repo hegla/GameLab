@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Sem2Lab1SQLServer.Ratings>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Оцінки критика @ViewBag.CriticName</h1>
+
+<p>
+    <a asp-action="Index" asp-controller="Critics" class="btn btn-outline-dark">Повернутися до критиків</a>
+    <a asp-action="Index" asp-controller="Ratings" class="btn btn-outline-dark">Перейти до рейтингу</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Game)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mark)
+            </th>
+            <th>Керування</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Game.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Mark)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.RatingId" class="btn btn-outline-info">Детальніше про гру</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,33 @@
+﻿@model Sem2Lab1SQLServer.Publications
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Додавання публікацій</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="GameId" class="control-label"></label>
+                <select asp-for="GameId" class ="form-control" asp-items="ViewBag.GameId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="PublisherId" class="control-label"></label>
+                <select asp-for="PublisherId" class ="form-control" asp-items="ViewBag.PublisherId"></select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-outline-primary">Додати</button>
+                <a asp-action="Index" class="btn btn-outline-primary">Повернутися до публікацій</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

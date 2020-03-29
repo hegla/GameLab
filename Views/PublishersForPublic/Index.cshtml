@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Sem2Lab1SQLServer.Publishers>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Деталі про видавицтво</h1>
+
+<p>
+    <input type="button" class="btn btn-outline-dark" onclick="history.go(-1)" value="Повернутися до публікацій" />
+    <a asp-action="Index" asp-controller="Publishers" class="btn btn-outline-dark">Перейти до списку видавництв</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Earnings)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Contacts)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Earnings)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Contacts)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

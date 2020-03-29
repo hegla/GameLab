@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Sem2Lab1SQLServer.Countries>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Країни, які знаходяться на континенті @ViewBag.ContName</h1>
+
+<p>
+    <a asp-action="Index" asp-controller="Countries" class="btn btn-outline-dark">Перейти до списку країн</a>
+    <a asp-action="Index" asp-controller="Continents" class="btn btn-outline-dark">Повернутися до списку континентів</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Continent)
+            </th>
+            <th>Керування</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Continent.Name)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.CountryId" class="btn btn-outline-info">Деталі про розробника</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

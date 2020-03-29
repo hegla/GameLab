@@ -1,0 +1,48 @@
+﻿@model IEnumerable<Sem2Lab1SQLServer.Games>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Деталі про гру</h1>
+
+<p>
+    <input type="button" class="btn btn-outline-dark" onclick="history.go(-1)" value="Повернутися до публікацій" />
+    <a asp-action="Index" asp-controller="Games" class="btn btn-outline-dark">Перейти до списку ігор</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Budget)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Developer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Genre)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Budget)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Developer.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Genre.Description)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

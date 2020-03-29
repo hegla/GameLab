@@ -1,0 +1,38 @@
+﻿@model Sem2Lab1SQLServer.Ratings
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Додавання оцінки</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CriticId" class="control-label"></label>
+                <select asp-for="CriticId" class="form-control" asp-items="ViewBag.CriticId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="GameId" class="control-label"></label>
+                <select asp-for="GameId" class="form-control" asp-items="ViewBag.GameId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Mark" class="control-label"></label>
+                <input asp-for="Mark" class="form-control" />
+                <span asp-validation-for="Mark" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-outline-primary">Додати</button>
+                <a asp-action="Index" class="btn btn-outline-primary">Повернутися до рейтингу</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

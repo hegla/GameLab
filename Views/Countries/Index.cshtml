@@ -1,0 +1,68 @@
+﻿@model IEnumerable<Sem2Lab1SQLServer.Countries>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Країни</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-dark">Додати країну</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Continent)
+            </th>
+            <th>Керування</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        var tm = "#myModal" + item.CountryId;
+        var mid = "myModal" + item.CountryId;
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Continent.Name)
+            </td>
+            <td>
+                <a asp-action="ContDetails" asp-route-id="@item.CountryId" class="btn btn-outline-info">Деталі про континент</a>
+                <a asp-action="Details" asp-route-id="@item.CountryId" class="btn btn-outline-info">Показати розробників</a>
+                <a asp-action="Edit" asp-route-id="@item.CountryId" class="btn btn-outline-primary">Редагування</a>
+                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="@tm">Видалити</button>
+
+
+                <div class="modal fade" id="@mid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Видалення</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body delete-modal-body">
+                                Ви впевнені що хочете видалити цю країну?
+                            </div>
+                            <div class="modal-footer">
+                                <form asp-action="Delete" asp-route-id="@item.CountryId">
+                                    <button type="submit" class="btn btn-danger" id="deleteBtn">Видалити</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Скасувати</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

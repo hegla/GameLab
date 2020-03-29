@@ -1,0 +1,128 @@
+﻿@model IEnumerable<Sem2Lab1SQLServer.Games>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Комп'ютерні ігри</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-dark">Додати гру</a>
+    <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#lable">Статистика</button>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Budget)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Developer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Genre)
+            </th>
+            <th>Керування</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var tm = "#myModal" + item.GameId;
+            var mid = "myModal" + item.GameId;
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Budget)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Developer.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Genre.Name)
+                </td>
+                <td>
+                    <a asp-action="GenreDetails" asp-route-id="@item.GameId" class="btn btn-outline-info">Деталі про жанр</a>
+                    <a asp-action="DevelopDetails" asp-route-id="@item.GameId" class="btn btn-outline-info">Деталі про розробника</a>
+                    <a asp-action="PublicationsDetails" asp-route-id="@item.GameId" class="btn btn-outline-info">Публікації</a>
+                    <a asp-action="RatingDetails" asp-route-id="@item.GameId" class="btn btn-outline-info">Рейтинги</a>
+                    <a asp-action="Edit" asp-route-id="@item.GameId" class="btn btn-outline-primary">Редагування</a>
+                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="@tm">Видалити</button>
+                </td>
+
+                <div class="modal fade" id="@mid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Видалення</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body delete-modal-body">
+                                Ви впевнені що хочете видалити цю гру?
+                            </div>
+                            <div class="modal-footer">
+                                <form asp-action="Delete" asp-route-id="@item.GameId">
+                                    <button type="submit" class="btn btn-danger" id="deleteBtn">Видалити</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Скасувати</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<div class="modal fade" id="lable" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="width:auto">
+            <div class="modal-header">
+                <h5 class="modal-title">Статистика</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="piechart"></div>
+            </div>
+            <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрити</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script>
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            $.get('/api/GenGames/JsonDataGenres', function (jsonData) {
+                data = google.visualization.arrayToDataTable(jsonData, false);
+                var option = {
+                    title: "Співвідношення кількості ігор та жанрів",
+                    width: 500,
+                    height: 300
+                };
+                chart = new google.visualization.PieChart(document.getElementById('piechart'));
+                chart.draw(data, option);
+            })
+        }
+
+    </script>
+
+}

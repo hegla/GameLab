@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Sem2Lab1SQLServer.Developers>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Розробники у країні @ViewBag.Name</h1>
+
+<p>
+    <input type="button" class="btn btn-outline-dark" onclick="history.go(-1)" value="Повернутися до країн" />
+    <a asp-action="Index" asp-controller="Developers" class="btn btn-outline-dark">Перейти до списку розробників</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FoundationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WorkersNumber)
+            </th>
+            <th>Керування</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FoundationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WorkersNumber)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.DeveloperId" class="btn btn-outline-info">Деталі про ігри</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

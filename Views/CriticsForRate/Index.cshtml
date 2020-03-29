@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Sem2Lab1SQLServer.Critics>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Деталі про критика</h1>
+
+<p>
+    <input type="button" class="btn btn-outline-dark" onclick="history.go(-1)" value="Повернутися до рейтингу" />
+    <a asp-action="Index" asp-controller="Critics" class="btn btn-outline-dark">Перейти до списку критиків</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Username)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

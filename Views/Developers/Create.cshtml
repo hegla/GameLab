@@ -1,0 +1,44 @@
+﻿@model Sem2Lab1SQLServer.Developers
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Додавання розробника</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FoundationDate" class="control-label"></label>
+                <input asp-for="FoundationDate" class="form-control" />
+                <span asp-validation-for="FoundationDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="WorkersNumber" class="control-label"></label>
+                <input asp-for="WorkersNumber" class="form-control" />
+                <span asp-validation-for="WorkersNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CountryId" class="control-label"></label>
+                <select asp-for="CountryId" class ="form-control" asp-items="ViewBag.CountryId"></select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-outline-primary">Додати</button>
+                <a asp-action="Index" class="btn btn-outline-primary">Повернутися до розробників</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
