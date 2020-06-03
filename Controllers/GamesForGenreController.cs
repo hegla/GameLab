@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,41 @@ namespace Sem2Lab1SQLServer.Controllers
         public GamesForGenreController(gameindustryContext context)
         {
             _context = context;
+        }
+
+        public ActionResult Export(int? id, string? name)
+        {
+            using (XLWorkbook workbook = new XLWorkbook(XLEventTracking.Disabled))
+            {
+                var worksheet = workbook.Worksheets.Add(name);
+
+                worksheet.Cell("A1").Value = "Жанр";
+                worksheet.Cell("A2").Value = name;
+                worksheet.Cell("B1").Value = "Назва гри";
+                worksheet.Cell("C1").Value = "Бюджет, $";
+                worksheet.Cell("D1").Value = "Розробник";
+                worksheet.Row(1).Style.Font.Bold = true;
+                var games = _context.Games.Where(x => x.GenreId == id).Include(x => x.Developer).ToList();
+
+                for (int i = 0; i < games.Count; i++)
+                {
+                    worksheet.Cell(i + 2, 2).Value = games[i].Name;
+                    worksheet.Cell(i + 2, 3).Value = games[i].Budget;
+                    worksheet.Cell(i + 2, 4).Value = games[i].Developer.Name;
+                }
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    stream.Flush();
+
+                    return new FileContentResult(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    {
+                        FileDownloadName = $"gamesForGenre_{DateTime.UtcNow.ToShortDateString()}.xlsx"
+                    };
+                }
+
+            }
         }
 
         // GET: GamesForGenre

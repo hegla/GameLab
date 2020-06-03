@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -160,6 +164,108 @@ namespace Sem2Lab1SQLServer.Controllers
         private bool GenresExists(int id)
         {
             return _context.Genres.Any(e => e.GenreId == id);
+        }
+
+        //Import 
+        public IActionResult Import(bool errorFlag, string error)
+        {
+            if (!errorFlag)
+            {
+                ViewBag.Error = "Оберіть Excel-файл";
+            }
+            else
+            {
+                ViewBag.Error = error;
+                ViewBag.ErrorPopupFlag = 1;
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Import(IFormFile fileExcel)
+        {
+            if (fileExcel != null)
+            {
+                using (var stream = new FileStream(fileExcel.FileName, FileMode.Create))
+                {
+                    await fileExcel.CopyToAsync(stream);
+                    using (XLWorkbook workbook = new XLWorkbook(stream, XLEventTracking.Disabled))
+                    {
+                        if (!ParseDocument(workbook, out string error))
+                        {
+                            return RedirectToAction("Import", new { errorFlag = true, error = error });
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return RedirectToAction("Import", new { errorFlag = true, error = "Файл відсутній, спробуйте ще раз" });
+            }
+
+            return RedirectToAction("Index", "Genres");
+        }
+
+        private bool ParseDocument(XLWorkbook workbook, out string error)
+        {
+            error = "";
+            foreach (IXLWorksheet worksheet in workbook.Worksheets)
+            {
+                foreach (IXLRow row in worksheet.RowsUsed().Skip(1))
+                {
+                    if (!ParseRow(row, out error))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private bool ParseRow(IXLRow row, out string error)
+        {
+            Genres genre = new Genres();
+            string name = row.Cell(1).Value.ToString();
+            string descr = row.Cell(2).Value.ToString();
+
+            string regex = @"^[А-ЯІЇЄа-яіїєA-Za-z'-'' ']*$";
+
+            if (Regex.IsMatch(name, regex, RegexOptions.IgnoreCase))
+            {
+                bool dublicate = _context.Genres.Any(l => l.Name.Equals(name));
+                if (dublicate)
+                {
+                    error = "Наявна існуюча в базі назва";
+                    return false;
+                }
+                else
+                {
+                    genre.Name = name;
+                }
+            }
+            else
+            {
+                error = "У файлі наявне некоректна назва";
+                return false;
+            }
+
+
+            if (Regex.IsMatch(descr, regex, RegexOptions.IgnoreCase))
+            {
+                genre.Description = descr;
+            }
+            else
+            {
+                error = "У файлі вказаний некоректний опис";
+                return false;
+            }
+
+            _context.Genres.Add(genre);
+            _context.SaveChanges();
+            error = "";
+            return true;
         }
     }
 }

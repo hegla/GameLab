@@ -17,7 +17,7 @@ namespace Sem2Lab1SQLServer
         [RegularExpression(@"^[А-ЯІЄЇа-яіїєA-Za-z'-'' ']*$", ErrorMessage = "Введена некоректна назва")]
         public string Name { get; set; }
         [Required(ErrorMessage = "Поле не може бути порожнім")]
-        [Display(Name = "Дата")]
+        [Display(Name = "Дата заснування")]
         [DataType(DataType.Date)]
         public DateTime FoundationDate { get; set; }
         [Required(ErrorMessage = "Поле не може бути порожнім")]

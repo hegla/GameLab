@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -159,6 +163,120 @@ namespace Sem2Lab1SQLServer.Controllers
         private bool PublishersExists(int id)
         {
             return _context.Publishers.Any(e => e.PublisherId == id);
+        }
+
+
+        //Import 
+        public IActionResult Import(bool errorFlag, string error)
+        {
+            if (!errorFlag)
+            {
+                ViewBag.Error = "Оберіть Excel-файл";
+            }
+            else
+            {
+                ViewBag.Error = error;
+                ViewBag.ErrorPopupFlag = 1;
+            }
+
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Import(IFormFile fileExcel)
+        {
+            if (fileExcel != null)
+            {
+                using (var stream = new FileStream(fileExcel.FileName, FileMode.Create))
+                {
+                    await fileExcel.CopyToAsync(stream);
+                    using (XLWorkbook workbook = new XLWorkbook(stream, XLEventTracking.Disabled))
+                    {
+                        if (!ParseDocument(workbook, out string error))
+                        {
+                            return RedirectToAction("Import", new { errorFlag = true, error = error });
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return RedirectToAction("Import", new { errorFlag = true, error = "Файл відсутній, спробуйте ще раз" });
+            }
+
+            return RedirectToAction("Index", "Publishers");
+        }
+
+        private bool ParseDocument(XLWorkbook workbook, out string error)
+        {
+            error = "";
+            foreach (IXLWorksheet worksheet in workbook.Worksheets)
+            {
+                foreach (IXLRow row in worksheet.RowsUsed().Skip(1))
+                {
+                    if (!ParseRow(row, out error))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private bool ParseRow(IXLRow row, out string error)
+        {
+            Publishers publisher = new Publishers();
+            string name = row.Cell(1).Value.ToString();
+            string earnings = row.Cell(2).Value.ToString();
+            string email = row.Cell(3).Value.ToString();
+
+            string regexName = @"^[А-ЯІЇЄа-яіїєA-Za-z'-'' ']*$";
+            string regexEarn = @"^[1-9][0-9]*$";
+            string regexCont = @"^(?("")(""[^""]+?""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
+                @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9]{2,17}))$";
+
+            if (Regex.IsMatch(name, regexName, RegexOptions.IgnoreCase))
+            {
+                bool dublicate = _context.Publishers.Any(l => l.Name.Equals(name));
+                if(dublicate)
+                {
+                    error = "Наявна існуюча в базі назва";
+                    return false;
+                } 
+                else
+                {
+                    publisher.Name = name;
+                }
+            }
+            else
+            {
+                error = "У файлі наявне некоректна назва";
+                return false;
+            }
+
+            if (Regex.IsMatch(earnings, regexEarn, RegexOptions.IgnoreCase))
+            {
+                publisher.Earnings = Convert.ToDouble(earnings);
+            }
+            else
+            {
+                error = "У файлі наявний некоректний дохід";
+                return false;
+            }
+
+            if (Regex.IsMatch(email, regexCont, RegexOptions.IgnoreCase))
+            {
+                publisher.Contacts = email;
+            }
+            else
+            {
+                error = "У файлі вказана некоректна електронна адреса";
+                return false;
+            }
+            _context.Publishers.Add(publisher);
+            _context.SaveChanges();
+            error = "";
+            return true;
         }
     }
 }

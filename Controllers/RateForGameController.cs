@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,11 +20,45 @@ namespace Sem2Lab1SQLServer.Controllers
             _context = context;
         }
 
+        public ActionResult Export(int? id, string? name)
+        {
+            using (XLWorkbook workbook = new XLWorkbook(XLEventTracking.Disabled))
+            {
+                var worksheet = workbook.Worksheets.Add(name);
+
+                worksheet.Cell("A1").Value = "Гра";
+                worksheet.Cell("A2").Value = name;
+                worksheet.Cell("B1").Value = "Критик";
+                worksheet.Cell("C1").Value = "Оцінка";
+                worksheet.Row(1).Style.Font.Bold = true;
+                var ratings = _context.Ratings.Where(x => x.GameId == id).Include(x => x.Critic).ToList();
+
+                for (int i = 0; i < ratings.Count; i++)
+                {
+                    worksheet.Cell(i + 2, 2).Value = ratings[i].Critic.Username;
+                    worksheet.Cell(i + 2, 3).Value = ratings[i].Mark;
+                }
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    stream.Flush();
+
+                    return new FileContentResult(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    {
+                        FileDownloadName = $"ratingsForGame_{DateTime.UtcNow.ToShortDateString()}.xlsx"
+                    };
+                }
+
+            }
+        }
+
         // GET: RateForGames
         public async Task<IActionResult> Index(int? id, string? name)
         {
             if (id == null) return RedirectToAction("Index", "Games");
             ViewBag.GameName = name;
+            ViewBag.GameId = id;
             var rateForGame = _context.Ratings.Where(x => x.GameId == id).Include(r => r.Critic).Include(r => r.Game);
             return View(await rateForGame.ToListAsync());
         }

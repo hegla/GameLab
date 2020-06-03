@@ -7,7 +7,10 @@
 <h1>Комп'ютерні ігри</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-outline-dark">Додати гру</a>
+    @if (User.IsInRole("admin"))
+    {
+        <a asp-action="Create" class="btn btn-outline-dark">Додати гру</a>
+    }
     <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#lable">Статистика</button>
 </p>
 <table class="table">
@@ -51,8 +54,11 @@
                     <a asp-action="DevelopDetails" asp-route-id="@item.GameId" class="btn btn-outline-info">Деталі про розробника</a>
                     <a asp-action="PublicationsDetails" asp-route-id="@item.GameId" class="btn btn-outline-info">Публікації</a>
                     <a asp-action="RatingDetails" asp-route-id="@item.GameId" class="btn btn-outline-info">Рейтинги</a>
-                    <a asp-action="Edit" asp-route-id="@item.GameId" class="btn btn-outline-primary">Редагування</a>
+                    @if (User.IsInRole("admin"))
+                    {
+                     <a asp-action="Edit" asp-route-id="@item.GameId" class="btn btn-outline-primary">Редагування</a>
                     <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="@tm">Видалити</button>
+                    }
                 </td>
 
                 <div class="modal fade" id="@mid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

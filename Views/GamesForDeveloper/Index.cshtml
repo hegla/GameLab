@@ -9,6 +9,7 @@
 <p>
     <a asp-action="Index" asp-controller="Developers" class="btn btn-outline-dark">Повернутися до списку розробників</a>
     <a asp-action="Index" asp-controller="Games" class="btn btn-outline-dark">Перейти до списку ігор</a>
+    <a asp-action="Export" asp-route-id="@ViewBag.DevId" asp-route-name="@ViewBag.Name" class="btn btn-outline-dark">Завантажити інформацію</a>
 </p>
 <table class="table">
     <thead>

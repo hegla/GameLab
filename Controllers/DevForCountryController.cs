@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,41 @@ namespace Sem2Lab1SQLServer.Controllers
         public DevForCountryController(gameindustryContext context)
         {
             _context = context;
+        }
+
+        public ActionResult Export(int? id, string? name)
+        {
+            using (XLWorkbook workbook = new XLWorkbook(XLEventTracking.Disabled))
+            {
+                var worksheet = workbook.Worksheets.Add(name);
+
+                worksheet.Cell("A1").Value = "Країна";
+                worksheet.Cell("A2").Value = name;
+                worksheet.Cell("B1").Value = "Розробник";
+                worksheet.Cell("C1").Value = "Дата заснування";
+                worksheet.Cell("D1").Value = "Кількість працівників";
+                worksheet.Row(1).Style.Font.Bold = true;
+                var devs = _context.Developers.Where(x => x.CountryId == id).ToList();
+
+                for (int i = 0; i < devs.Count; i++)
+                {
+                    worksheet.Cell(i + 2, 2).Value = devs[i].Name;
+                    worksheet.Cell(i + 2, 3).Value = devs[i].FoundationDate;
+                    worksheet.Cell(i + 2, 4).Value = devs[i].WorkersNumber;
+                }
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    stream.Flush();
+
+                    return new FileContentResult(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    {
+                        FileDownloadName = $"devsForCountry_{DateTime.UtcNow.ToShortDateString()}.xlsx"
+                    };
+                }
+
+            }
         }
 
         // GET: DevForCountry

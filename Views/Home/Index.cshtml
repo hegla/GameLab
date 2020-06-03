@@ -2,9 +2,27 @@
     ViewData["Title"] = "Home Page";
 }
 
+@{
+    var a = 1;
+    <h1>a=(a+2)</h1>
+}
+
+@if (User.Identity.IsAuthenticated)
+{
     <div class="text-center">
         <p class="display-2">GameLab</p>
         <h3 class="font-weight-light">Твоя бібліотека у світі комп'ютерних ігор</h3>
         <a asp-action="Index" asp-controller="Games" class="btn btn-dark">Перейти до бібліотеки</a>
 
     </div>
+}
+else
+{
+    <div class="text-center">
+        <p class="display-2">GameLab</p>
+        <h3 class="font-weight-light">Твоя бібліотека у світі комп'ютерних ігор</h3>
+        <a asp-controller="Account" asp-action="Login" class="btn btn-dark">Увійти</a>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-dark">Реєстрація</a>
+    </div>
+
+}

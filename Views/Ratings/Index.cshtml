@@ -5,10 +5,12 @@
 }
 
 <h1>Рейтинг</h1>
-
-<p>
-    <a asp-action="Create" class="btn btn-outline-dark">Додати оцінку</a>
-</p>
+@if (User.IsInRole("admin"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-outline-dark">Додати оцінку</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -25,49 +27,53 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        var tm = "#myModal" + item.RatingId;
-        var mid = "myModal" + item.RatingId;
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Critic.Username)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Game.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Mark)
-            </td>
-            <td>
-                <a asp-action="GameDetails" asp-route-id="@item.RatingId" class="btn btn-outline-info">Деталі про гру</a>
-                <a asp-action="Details" asp-route-id="@item.RatingId" class="btn btn-outline-info">Деталі про критика</a>
-                <a asp-action="Edit" asp-route-id="@item.RatingId" class="btn btn-outline-primary">Редагування</a>
-                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="@tm">Видалити</button>
-            </td>
+        @foreach (var item in Model)
+        {
+            var tm = "#myModal" + item.RatingId;
+            var mid = "myModal" + item.RatingId;
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Critic.Username)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Game.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mark)
+                </td>
+                <td>
+                    <a asp-action="GameDetails" asp-route-id="@item.RatingId" class="btn btn-outline-info">Деталі про гру</a>
+                    <a asp-action="Details" asp-route-id="@item.RatingId" class="btn btn-outline-info">Деталі про критика</a>
+                    @if (User.IsInRole("admin"))
+                    {
+                     <a asp-action="Edit" asp-route-id="@item.RatingId" class="btn btn-outline-primary">Редагування</a>
+                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="@tm">Видалити</button>
+                    }
+                </td>
 
-            <div class="modal fade" id="@mid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Видалення</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body delete-modal-body">
-                            Ви впевнені що хочете видалити цю оцінку?
-                        </div>
-                        <div class="modal-footer">
-                            <form asp-action="Delete" asp-route-id="@item.RatingId">
-                                <button type="submit" class="btn btn-danger" id="deleteBtn">Видалити</button>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Скасувати</button>
-                            </form>
+                <div class="modal fade" id="@mid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Видалення</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body delete-modal-body">
+                                Ви впевнені що хочете видалити цю оцінку?
+                            </div>
+                            <div class="modal-footer">
+                                <form asp-action="Delete" asp-route-id="@item.RatingId">
+                                    <button type="submit" class="btn btn-danger" id="deleteBtn">Видалити</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Скасувати</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-        </tr>
-}
+            </tr>
+        }
     </tbody>
 </table>

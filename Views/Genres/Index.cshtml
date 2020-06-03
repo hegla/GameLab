@@ -7,7 +7,11 @@
 <h1>Жанри</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-outline-dark">Додати жанр</a>
+    @if (User.IsInRole("admin"))
+    {
+     <a asp-action="Create" class="btn btn-outline-dark">Додати жанр</a>
+     <a asp-action="Import" class="btn btn-outline-dark">Завантажити інформацію</a>
+    }
 </p>
 <table class="table">
     <thead>
@@ -23,8 +27,8 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        var tm = "#myModal" + item.GenreId;
-        var mid = "myModal" + item.GenreId;
+    var tm = "#myModal" + item.GenreId;
+    var mid = "myModal" + item.GenreId;
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
@@ -34,8 +38,11 @@
             </td>
             <td>
                 <a asp-action="Details" asp-route-id="@item.GenreId" class="btn btn-outline-info">Показати ігри</a>
-                <a asp-action="Edit" asp-route-id="@item.GenreId" class="btn btn-outline-primary">Редагування</a>
+                @if (User.IsInRole("admin"))
+                {
+                 <a asp-action="Edit" asp-route-id="@item.GenreId" class="btn btn-outline-primary">Редагування</a>
                 <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="@tm">Видалити</button>
+                }
             </td>
 
             <div class="modal fade" id="@mid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

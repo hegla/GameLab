@@ -14,11 +14,11 @@ namespace Sem2Lab1SQLServer
         public int GenreId { get; set; }
         [Required(ErrorMessage = "Поле не може бути порожнім")]
         [Display(Name = "Назва")]
-        [RegularExpression(@"^[А-ЯІЇЄа-яіїє' ']*$", ErrorMessage = "Введена некоректна назва")]
+        [RegularExpression(@"^[А-ЯІЇЄа-яіїєA-Za-z'-'' ']*$", ErrorMessage = "Введена некоректна назва")]
         public string Name { get; set; }
         [Required(ErrorMessage = "Поле не може бути порожнім")]
         [Display(Name = "Опис")]
-        [RegularExpression(@"^[А-ЯІЇЄа-яіїє' ']*$", ErrorMessage = "Введена некоректний опис")]
+        [RegularExpression(@"^[А-ЯІЇЄа-яіїєA-Za-z'-'' ']*$", ErrorMessage = "Введена некоректний опис")]
         public string Description { get; set; }
 
         public virtual ICollection<Games> Games { get; set; }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +20,7 @@ namespace Sem2Lab1SQLServer.Controllers
             _context = context;
         }
 
+
         // GET: GamesForDeveloper
         public async Task<IActionResult> Index(int? id, string? name)
         {
@@ -26,6 +29,41 @@ namespace Sem2Lab1SQLServer.Controllers
             ViewBag.Name = name;
             var gameForDev = _context.Games.Where(x => x.DeveloperId == id).Include(g => g.Developer).Include(g => g.Genre);
             return View(await gameForDev.ToListAsync());
+        }
+
+        public ActionResult Export(int? id, string? name)
+        {
+            using (XLWorkbook workbook = new XLWorkbook(XLEventTracking.Disabled))
+            {
+                var worksheet = workbook.Worksheets.Add(name);
+
+                worksheet.Cell("A1").Value = "Розробник";
+                worksheet.Cell("A2").Value = name;
+                worksheet.Cell("B1").Value = "Назва гри";
+                worksheet.Cell("C1").Value = "Бюджет, $";
+                worksheet.Cell("D1").Value = "Жанр";
+                worksheet.Row(1).Style.Font.Bold = true;
+                var games = _context.Games.Where(x => x.DeveloperId == id).Include(x => x.Genre).ToList();
+
+                for (int i = 0; i < games.Count; i++)
+                {
+                    worksheet.Cell(i + 2, 2).Value = games[i].Name;
+                    worksheet.Cell(i + 2, 3).Value = games[i].Budget;
+                    worksheet.Cell(i + 2, 4).Value = games[i].Genre.Name;
+                }
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    stream.Flush();
+
+                    return new FileContentResult(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    {
+                        FileDownloadName = $"gamesForDeveloper_{DateTime.UtcNow.ToShortDateString()}.xlsx"
+                    };
+                }
+
+            }
         }
 
         // GET: GamesForDeveloper/Details/5

@@ -7,7 +7,10 @@
 <h1>Розробники</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-outline-dark">Додати розробника</a>
+    @if (User.IsInRole("admin"))
+    {
+        <a asp-action="Create" class="btn btn-outline-dark">Додати розробника</a>
+    }
     <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#lable">Статистика</button>
 </p>
 <table class="table">
@@ -49,8 +52,11 @@
                 <td>
                     <a asp-action="DetailsForCountry" asp-route-id="@item.DeveloperId" class="btn btn-outline-info">Деталі про країну</a>
                     <a asp-action="Details" asp-route-id="@item.DeveloperId" class="btn btn-outline-info">Деталі про ігри</a>
-                    <a asp-action="Edit" asp-route-id="@item.DeveloperId" class="btn btn-outline-primary">Редагування</a>
+                    @if (User.IsInRole("admin"))
+                    {
+                     <a asp-action="Edit" asp-route-id="@item.DeveloperId" class="btn btn-outline-primary">Редагування</a>
                     <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="@tm">Видалити</button>
+                    }
                 </td>
 
                 <div class="modal fade" id="@mid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
